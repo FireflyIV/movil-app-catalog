@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import '../../../../../constants/colors.dart';
 import '../../../../../constants/image_strings.dart';
 import '../../../../../constants/text_strings.dart';
+import '../../../../authentication/controllers/signup_controller.dart';
 
 class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DashboardAppBar({
@@ -13,6 +16,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formController = Get.put(SignUpController());
     return AppBar(
       elevation: 0,
       centerTitle: true,
@@ -31,7 +35,9 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             //For Dark Color
             color: isDark ? tSecondaryColor : tCardBgColor,
           ),
-          child: IconButton(onPressed: () {}, icon: const Image(image: AssetImage(tUserProfileImage))),
+          child: IconButton(onPressed: () {
+            SignUpController.instance.logout();
+          }, icon: const Image(image: AssetImage(tUserProfileImage))),
         )
       ],
     );

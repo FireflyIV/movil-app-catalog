@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:otp_text_field/otp_field.dart';
+import 'package:otp_text_field/style.dart';
 
 import '../../../../../constants/variables.dart';
 import '../../welcome/welcome_screen.dart';
@@ -31,13 +32,21 @@ class OTPScreen extends StatelessWidget {
             ),
             Text(tOtpSubTitle.toUpperCase(), style: Theme.of(context).textTheme.headline6),
             const SizedBox(height: 40.0),
-            const Text("$tOtpMessage support@codingwitht.com", textAlign: TextAlign.center),
+            const Text("$tOtpMessage correo@prueba.com", textAlign: TextAlign.center),
             const SizedBox(height: 20.0),
             OTPTextField(
-              controller: otpController,
-                textFieldAlignment: MainAxisAlignment.spaceAround,
-                length: 6,
-                onCompleted: (code) => print("OTP is => $code")),
+              length: 4,
+              width: MediaQuery.of(context).size.width,
+              fieldWidth: 80,
+              style: const TextStyle(
+                  fontSize: 17
+              ),
+              textFieldAlignment: MainAxisAlignment.spaceAround,
+              fieldStyle: FieldStyle.underline,
+              onCompleted: (pin) {
+                print("Completed: " + pin);
+              },
+            ),
             const SizedBox(height: 20.0),
             SizedBox(
               width: double.infinity,

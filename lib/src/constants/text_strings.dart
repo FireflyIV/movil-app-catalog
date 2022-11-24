@@ -56,7 +56,7 @@ const String tForgetMailSubTitle = "Ingresa tu correo electrónico para recibir 
 
 
 // -- OTP Screen - Text
-const String tOtpTitle = "CO\nDE";
+const String tOtpTitle = "";
 const String tOtpSubTitle = "Verificación";
 const String tOtpMessage = "Ingresa el código enviado: ";
 
@@ -71,3 +71,12 @@ const String tDashboardBannerTitle2 = "La Michoacana";
 const String tDashboardBannerSubTitle = "Restaurante familiar...";
 const String tDashboardButton = "Ver todo";
 const String tDashboardTopCourses = "Ultimos catálogos agregados";
+
+
+// Authentication exceptions
+const String tAuthExceptionWeakPassword = "Ingresa una contraseña mas dificil";
+const String tAuthExceptionInvalidEmail = "El correo electronico es invalido";
+const String tAuthExceptionEmailUsed = "Ya existe una cuenta registrada con este correo electrónico";
+const String tAuthExceptionOperationNotAllowed = "Esta operación no esta permitida";
+const String tAuthExceptionUserDisabled = "Este usuario esta deshabilitado";
+const String tAuthExceptionDefault = "A ocurrido un error inesperado";
