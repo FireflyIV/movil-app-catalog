@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../constants/image_strings.dart';
 import '../../../../../constants/text_strings.dart';
+import '../../../controllers/signup_controller.dart';
 import '../../login/login_screen.dart';
 
 class SignUpFooterWidget extends StatelessWidget {
@@ -11,13 +12,16 @@ class SignUpFooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formController = Get.put(SignUpController());
     return Column(
       children: [
         const Text("OR"),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              formController.signInWithGoogle();
+            },
             icon: const Image(
               image: AssetImage(tGoogleLogoImage),
               width: 20.0,

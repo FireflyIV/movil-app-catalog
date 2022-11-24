@@ -37,12 +37,6 @@ class SignUpFormWidget extends StatelessWidget {
             ),
             const SizedBox(height: tFormHeight - 20),
             TextFormField(
-              controller: formController.phoneNo,
-              decoration: const InputDecoration(
-                  label: Text(tPhoneNo), prefixIcon: Icon(Icons.numbers)),
-            ),
-            const SizedBox(height: tFormHeight - 20),
-            TextFormField(
               controller: formController.password,
               decoration: const InputDecoration(
                   label: Text(tPassword), prefixIcon: Icon(Icons.fingerprint)),
@@ -56,8 +50,7 @@ class SignUpFormWidget extends StatelessWidget {
                     SignUpController.instance.registerUser(
                         formController.email.text.trim(),
                         formController.password.text.trim(),
-                      formController.fullName.text.trim(),
-                      formController.phoneNo.text.trim());
+                      formController.fullName.text.trim());
                   }
                 },
                 child: Text(tSignup.toUpperCase()),

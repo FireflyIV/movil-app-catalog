@@ -1,10 +1,10 @@
 import 'package:catalogo_app/src/constants/sizes.dart';
 import 'package:catalogo_app/src/constants/text_strings.dart';
 import 'package:catalogo_app/src/features/authentication/screens/forget_password/forget_password_options/forget_password_model_bottom_sheet.dart';
-import 'package:catalogo_app/src/features/core/screens/dashboard/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+
+import '../../controllers/signup_controller.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({
@@ -13,6 +13,7 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formController = Get.put(SignUpController());
     return Form(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: tFormHeight -10),
@@ -20,6 +21,7 @@ class LoginForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: formController.email,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person_outline_outlined),
                   labelText: tEmail,
@@ -29,18 +31,16 @@ class LoginForm extends StatelessWidget {
               ),
               const SizedBox(height: tFormHeight - 20),
               TextFormField(
+                controller: formController.password,
                 decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.fingerprint),
                     labelText: tPassword,
                     hintText: tPassword,
                     border: OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      onPressed: null,
-                      icon: Icon(Icons.remove_red_eye_sharp),
-                    )
                 ),
+                obscureText: true,
               ),
-              const SizedBox(height: tFormHeight - 20),
+              const SizedBox(height: tFormHeight - 30),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -54,7 +54,11 @@ class LoginForm extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => Get.to(() => const Dashboard()),
+                  onPressed: () {
+                    SignUpController.instance.signInWithEmailAndPassword(
+                        formController.email.text.trim(),
+                        formController.password.text.trim());
+                  },
                   child: Text(tLogin.toUpperCase()),
                 ),
               ),

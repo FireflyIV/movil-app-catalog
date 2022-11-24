@@ -73,10 +73,30 @@ const String tDashboardButton = "Ver todo";
 const String tDashboardTopCourses = "Ultimos catálogos agregados";
 
 
-// Authentication exceptions
+// -- Authentication exceptions
 const String tAuthExceptionWeakPassword = "Ingresa una contraseña mas dificil";
 const String tAuthExceptionInvalidEmail = "El correo electronico es invalido";
 const String tAuthExceptionEmailUsed = "Ya existe una cuenta registrada con este correo electrónico";
 const String tAuthExceptionOperationNotAllowed = "Esta operación no esta permitida";
 const String tAuthExceptionUserDisabled = "Este usuario esta deshabilitado";
 const String tAuthExceptionDefault = "A ocurrido un error inesperado";
+
+
+// -- Profile Image Link
+const String tProfileImage = "https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_Placeholder_Square.png";
+
+// -- Profile Screen Text
+const String tProfile = "Mi perfil";
+const tEditProfile = "Editar perfil";
+const tLogoutDialogHeading = "Cerrar sesión";
+const tProfileHeading = "#";
+const tProfileSubHeading = "#";
+//    -- Menu
+const String tMenu1 = "Cerrar Sesión";
+const String tMenu2 = "Escanear QR";
+const String tMenu3 = "Salir";
+
+//    -- Update Profile Screen Text
+const String tDelete = "Eliminar cuenta";
+const String tJoined = "Ingresó";
+const String tJoinedAt = "22 Noviembre 2022";
