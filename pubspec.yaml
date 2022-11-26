@@ -32,6 +32,9 @@ dependencies:
   ## -- Icon Packages
   cupertino_icons: ^1.0.2
   line_awesome_flutter: ^2.0.0
+  cloud_firestore: ^4.1.0
+  awesome_snackbar_content: ^0.1.0
+  flutter_svg: ^1.1.6
 
 dev_dependencies:
   flutter_test:
@@ -50,4 +53,5 @@ flutter:
     - assets/images/welcome_images/
     - assets/logo/
     - assets/images/forget_password/
+    - assets/error_messages/
 

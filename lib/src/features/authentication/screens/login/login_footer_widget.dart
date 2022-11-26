@@ -1,7 +1,12 @@
 import 'package:catalogo_app/src/constants/image_strings.dart';
 import 'package:catalogo_app/src/constants/sizes.dart';
 import 'package:catalogo_app/src/constants/text_strings.dart';
+import 'package:catalogo_app/src/features/authentication/screens/signup/signup_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controllers/signup_controller.dart';
+import '../welcome/welcome_screen.dart';
 
 class LoginFooterWidget extends StatelessWidget {
   const LoginFooterWidget({
@@ -10,6 +15,7 @@ class LoginFooterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formController = Get.put(SignUpController());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -19,13 +25,15 @@ class LoginFooterWidget extends StatelessWidget {
           width: double.infinity,
           child: OutlinedButton.icon(
             icon: const Image(image: AssetImage(tGoogleLogoImage), width: 20.0,),
-            onPressed: () {},
+            onPressed: () {
+              formController.signInWithGoogle();
+            },
             label: const Text(tSignInWithGoogle),
           ),
         ),
         const SizedBox(height: tFormHeight - 10,),
         TextButton(
-            onPressed: () {},
+            onPressed: () => Get.offAll(() => const SignUpScreen()),
             child: Text.rich(
                 TextSpan(
                     text: tDontHaveAnAccount,
@@ -36,7 +44,6 @@ class LoginFooterWidget extends StatelessWidget {
                         style: TextStyle(color: Colors.blue),
                       ),
                     ]
-
                 ))),
       ],
     );

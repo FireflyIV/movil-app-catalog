@@ -5,6 +5,7 @@
 // -- Generic Text
 const String tLogin = "Iniciar Sesión";
 const String tSignup = "Registrarse";
+const String tSave = "Guardar";
 
 // -- Splash Screen Text
 const String tAppName = "Catalog";
@@ -80,10 +81,19 @@ const String tAuthExceptionEmailUsed = "Ya existe una cuenta registrada con este
 const String tAuthExceptionOperationNotAllowed = "Esta operación no esta permitida";
 const String tAuthExceptionUserDisabled = "Este usuario esta deshabilitado";
 const String tAuthExceptionDefault = "A ocurrido un error inesperado";
+// -- -- Login
+const String tAuthExceptionWrongPassword = "Contraseña o usuario incorrectos";
+const String tAuthExceptionUserNotFound = "No se encontró ningun usuario con este correo electrónico";
+const String tAuthExceptionLoginDefault = "Inicio de sesión incorrecto. Intente de nuevo";
+
+//
+
+// -- Validation
+const String tValidationMessage = "Este campo es obligatorio";
 
 
 // -- Profile Image Link
-const String tProfileImage = "https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_Placeholder_Square.png";
+const String tProfileImage = "https://firebasestorage.googleapis.com/v0/b/catalog-movil-app.appspot.com/o/default_profile_photo.png?alt=media&token=f3ff6aaa-c43b-47fa-a2b3-aa6c0786fcea";
 
 // -- Profile Screen Text
 const String tProfile = "Mi perfil";

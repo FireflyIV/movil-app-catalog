@@ -15,7 +15,8 @@ class SignUpFooterWidget extends StatelessWidget {
     final formController = Get.put(SignUpController());
     return Column(
       children: [
-        const Text("OR"),
+        const Text("O"),
+        const SizedBox(height: 10),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
@@ -29,6 +30,7 @@ class SignUpFooterWidget extends StatelessWidget {
             label: Text(tSignInWithGoogle.toUpperCase()),
           ),
         ),
+        const SizedBox(height: 10),
         TextButton(
           onPressed: () => Get.offAll(() => const LoginScreen()),
           child: Text.rich(TextSpan(children: [

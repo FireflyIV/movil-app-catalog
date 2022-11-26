@@ -4,6 +4,7 @@ import 'package:catalogo_app/src/features/authentication/screens/forget_password
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../common_widgets/custom_snack_bar/custom_snack_bar.dart';
 import '../../controllers/signup_controller.dart';
 
 class LoginForm extends StatelessWidget {
@@ -14,13 +15,21 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formController = Get.put(SignUpController());
+    final formKey = GlobalKey<FormState>();
+
     return Form(
+      key: formKey,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: tFormHeight -10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return tValidationMessage;
+                  }
+                },
                 controller: formController.email,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person_outline_outlined),
@@ -31,6 +40,11 @@ class LoginForm extends StatelessWidget {
               ),
               const SizedBox(height: tFormHeight - 20),
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return tValidationMessage;
+                  }
+                },
                 controller: formController.password,
                 decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.fingerprint),
@@ -50,14 +64,29 @@ class LoginForm extends StatelessWidget {
                   child: const Text(tForgetPassword),
                 ),
               ),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    SignUpController.instance.signInWithEmailAndPassword(
-                        formController.email.text.trim(),
-                        formController.password.text.trim());
+                    if (formKey.currentState!.validate()){
+                      SignUpController.instance.signInWithEmailAndPassword(
+                          formController.email.text.trim(),
+                          formController.password.text.trim()).then((String error) {
+                            print('SignUpForm::MessageError: $error');
+                            if (error != ''){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: CustomSnackBar(
+                                    errorMessage: error.toString(),
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                ),
+                              );
+                            }
+                      });
+                    }
                   },
                   child: Text(tLogin.toUpperCase()),
                 ),

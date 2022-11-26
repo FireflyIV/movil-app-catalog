@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 
 /* -- LIST OF COLORS -- */
 
-const tPrimaryColor = Color(0xFF303F9F);
-const tLightPrimaryColor = Color(0xFFC5CAE9);
-const tSecondaryColor = Color(0xFF3F51B5);
-const tAccentColor = Color(0xFFFF5722);
+const tPrimaryColor = Color(0xFF034AA6);
+const tLightPrimaryColor = Color(0xFFDDE4F1);
+const tSecondaryColor = Color(0xFF0669BF);
+const tAccentColor = Color(0xFF0487D9);
 
 const tCardBgColor = Color(0xFFC5CAE9);
 const tWhiteColor = Color(0xFFFFFFFF);

@@ -11,18 +11,17 @@ class SignUpController extends GetxController {
   final fullName = TextEditingController();
 
   // Register function to use in design
-  void registerUser(String email, String password, fullName) {
-    AuthenticationRepository.instance.createUserWithEmailAndPassword(email, password);
+  Future<String> registerUser(String email, String password, fullName) async {
+    return await AuthenticationRepository.instance.createUserWithEmailAndPassword(fullName, email, password);
   }
 
-  void signInWithEmailAndPassword(String email, String password){
-    AuthenticationRepository.instance.signInWithEmailAndPassword(email, password);
+  Future<String> signInWithEmailAndPassword(String email, String password) async {
+    return await AuthenticationRepository.instance.signInWithEmailAndPassword(email, password);
   }
 
   void signInWithGoogle(){
     AuthenticationRepository.instance.signInWithGoogle();
   }
-
 
   void logout() {
     AuthenticationRepository.instance.logout();

@@ -1,10 +1,15 @@
 
+import 'package:catalogo_app/src/constants/text_strings.dart';
 import 'package:catalogo_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import 'package:catalogo_app/src/features/core/screens/dashboard/dashboard.dart';
+import 'package:catalogo_app/src/repositories/authentication_repository/exceptions/login_email_password_failure.dart';
 import 'package:catalogo_app/src/repositories/authentication_repository/exceptions/signup_email_password_failure.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../../features/core/models/user/user_model.dart';
 
 class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();
@@ -20,33 +25,46 @@ class AuthenticationRepository extends GetxController {
   }
 
   _setInitialScreen(User? user) {
-    user == null ? Get.offAll(() => const WelcomeScreen()) : 
+    user == null ? Get.offAll(() => const WelcomeScreen()) :
                     Get.offAll(() => const Dashboard());
   }
-  
+
   // Email and password
-  Future<void> createUserWithEmailAndPassword(String email, String password) async {
+  Future<String> createUserWithEmailAndPassword(String fullName,String email, String password) async {
+    String error = "";
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      userCredential.user!.updateDisplayName("test");
-      firebaseUser.value != null ? Get.offAll(() => const Dashboard()) : Get.to(() => const WelcomeScreen());
+      createUser(userCredential.user!.uid.toString(), fullName, email, tProfileImage);
+
     } on FirebaseAuthException catch (e){
       final ex = SignUpWithEmailAndPasswordFailure.code(e.code);
+      error = ex.message;
       print('Firebase auth exception -  ${ex.message}');
-      throw ex;
+      //throw ex;
     } catch (_) {
       const ex = SignUpWithEmailAndPasswordFailure();
+      error = ex.message;
       print('Exception - ${ex.message}');
-      throw ex;
+      error = ex.message;
+      //throw ex;
     }
+    return error;
   }
 
-  Future<void> signInWithEmailAndPassword(String email, String password) async {
+  Future<String> signInWithEmailAndPassword(String email, String password) async {
+    String error = "";
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-    } catch (_){
-
+    } on FirebaseAuthException catch(e) {
+      final ex = LoginWithEmailAndPasswordFailure.code(e.code);
+      error = ex.message;
+      print('Firebase auth login exception -  ${ex.message}');
+    } catch(_) {
+      const ex = LoginWithEmailAndPasswordFailure();
+      print('Exception login - ${ex.message}');
+      error = ex.message;
     }
+    return error;
   }
 
   // Google
@@ -65,7 +83,10 @@ class AuthenticationRepository extends GetxController {
       );
 
       // Once signed in, return the UserCredential
-      await _auth.signInWithCredential(credential);
+      final google = await _auth.signInWithCredential(credential);
+      createUser(google.user!.uid.toString(), google.user!.displayName.toString(),
+          google.user!.email.toString(), google.user!.photoURL.toString());
+
     }
   }
 
@@ -74,5 +95,28 @@ class AuthenticationRepository extends GetxController {
     await GoogleSignIn().signOut();
   }
 
+  Future<void> createUser(String id, String fullName, String email, String photoURL) async{
+    final docUser = FirebaseFirestore.instance.collection('users').doc(id);
+    final user = UserModel(
+        id,
+        fullName,
+        email,
+        photoURL
+    );
+    final json = user.toJson();
+    await docUser.set(json);
+    print("Usuario creado");
+  }
 
+  Future<UserModel?> readUser() async {
+    User user = firebaseUser as User;
+    final docUser = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final snapshot = await docUser.get();
+
+    if (snapshot.exists) {
+      return UserModel.fromJson(snapshot.data()!);
+    } else{
+      return null;
+    }
+  }
 }

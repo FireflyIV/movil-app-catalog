@@ -1,5 +1,4 @@
 import 'package:catalogo_app/firebase_options.dart';
-import 'package:catalogo_app/src/features/authentication/screens/splash_screen/splash_screen.dart';
 import 'package:catalogo_app/src/repositories/authentication_repository/authentication_repository.dart';
 import 'package:catalogo_app/src/utils/theme/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,9 +23,9 @@ class MyApp extends StatelessWidget {
       darkTheme: TAppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      defaultTransition: Transition.leftToRightWithFade,
+      defaultTransition: Transition.downToUp,
       transitionDuration: const Duration(milliseconds: 500),
-      home: const CircularProgressIndicator(),
+      home: const Center(child: (CircularProgressIndicator())),
     );
   }
 }

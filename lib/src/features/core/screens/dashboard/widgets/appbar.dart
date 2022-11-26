@@ -36,7 +36,7 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
             //For Dark Color
             color: isDark ? tSecondaryColor : tCardBgColor,
           ),
-          child: IconButton(onPressed: () => Get.to(() => const ProfileScreen()), icon: const Image(image: AssetImage(tUserProfileImage))),
+          child: IconButton(onPressed: () => Get.to(() => ProfileScreen()), icon: const Image(image: AssetImage(tUserProfileImage))),
         )
       ],
     );
