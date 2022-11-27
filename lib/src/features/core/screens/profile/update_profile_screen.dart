@@ -1,15 +1,20 @@
+import 'dart:io';
+
+import 'package:catalogo_app/src/common_widgets/pick_image/pick_image_model_bottom_sheet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../../../../common_widgets/custom_snack_bar/custom_good_snack_bar.dart';
 import '../../../../common_widgets/custom_snack_bar/custom_snack_bar.dart';
 import '../../../../constants/colors.dart';
 import '../../../../constants/sizes.dart';
 import '../../../../constants/text_strings.dart';
-import '../../../authentication/controllers/signup_controller.dart';
 import '../../controllers/profile_controller.dart';
+
 
 class UpdateProfileScreen extends StatelessWidget {
   const UpdateProfileScreen({Key? key}) : super(key: key);
@@ -63,10 +68,13 @@ class UpdateProfileScreen extends StatelessWidget {
                             width: 35,
                             height: 35,
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: tAccentColor),
-                            child: const Icon(
-                              LineAwesomeIcons.camera,
-                              color: Colors.white,
-                              size: 20,
+                            child: IconButton(
+                              onPressed: () {
+                                PickImageScreen.buildShowModalBottomSheet(context);
+                              },
+                              icon: const Icon( LineAwesomeIcons.camera,
+                                color: Colors.white,
+                                size: 20, ),
                             ),
                           ),
                         ),
@@ -158,7 +166,4 @@ class UpdateProfileScreen extends StatelessWidget {
         }
     );
   }
-
-  
-
 }

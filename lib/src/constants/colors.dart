@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 const tPrimaryColor = Color(0xFF034AA6);
 const tLightPrimaryColor = Color(0xFFDDE4F1);
 const tSecondaryColor = Color(0xFF0669BF);
-const tAccentColor = Color(0xFF0487D9);
+const tAccentColor = Color(0xFF429ED9);
 
 const tCardBgColor = Color(0xFFC5CAE9);
 const tWhiteColor = Color(0xFFFFFFFF);

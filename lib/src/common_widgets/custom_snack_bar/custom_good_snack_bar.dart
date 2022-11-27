@@ -29,7 +29,7 @@ class CustomGoodSnackBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "¡Operacion exitosa!",
+                      "¡Operación exitosa!",
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     const SizedBox(height: 10),

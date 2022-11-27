@@ -48,11 +48,18 @@ class UserRepository extends GetxController {
     return res;
   }
 
+  Future<void> updatePhoto(String url) async {
+    await users.doc(user.uid).update({
+      'photoURL' : url
+    });
+  }
+
   Future<DocumentSnapshot<Object?>?> getUser() async {
     AsyncSnapshot<DocumentSnapshot<Object?>> snapshot = users.doc(user.uid).snapshots() as AsyncSnapshot<DocumentSnapshot<Object?>>;
     if (snapshot.hasData){
       var userDocument = snapshot.data;
       return userDocument;
     }
+    return null;
   }
 }

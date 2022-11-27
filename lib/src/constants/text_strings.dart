@@ -110,3 +110,11 @@ const String tMenu3 = "Salir";
 const String tDelete = "Eliminar cuenta";
 const String tJoined = "Ingresó";
 const String tJoinedAt = "22 Noviembre 2022";
+
+
+// -- Pick image
+const String tGallery = "Galeria";
+const String tGalleryText = "Elige una foto de tu galeria";
+
+const String tCamera = "Camara";
+const String tCameraText = "Toma una foto y subela";
