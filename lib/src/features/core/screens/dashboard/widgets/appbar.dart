@@ -1,5 +1,7 @@
 import 'package:catalogo_app/src/features/core/screens/profile/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../../../../../constants/colors.dart';
@@ -14,30 +16,31 @@ class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   final bool isDark;
-
   @override
   Widget build(BuildContext context) {
-    final formController = Get.put(SignUpController());
+    final user = FirebaseAuth.instance.currentUser!;
+
     return AppBar(
-      elevation: 0,
+      automaticallyImplyLeading: false,
       centerTitle: true,
-      backgroundColor: Colors.transparent,
-      leading: Icon(
-        Icons.menu,
-        //For Dark Color
-        color: isDark ? tWhiteColor : tDarkColor,
-      ),
-      title: Text(tAppName, style: Theme.of(context).textTheme.headline4),
+      backgroundColor: tPrimaryColor,
+      titleTextStyle: Theme.of(context).textTheme.headline4,
+      title: const Text(tAppName),
       actions: [
         Container(
-          margin: const EdgeInsets.only(right: 20, top: 7),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            //For Dark Color
-            color: isDark ? tSecondaryColor : tCardBgColor,
+          margin: const EdgeInsets.only(right: 10, top: 7, bottom: 7),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
           ),
-          child: IconButton(onPressed: () => Get.to(() => ProfileScreen()), icon: const Image(image: AssetImage(tUserProfileImage))),
-        )
+          child: GestureDetector(
+            onTap: () => Get.to(ProfileScreen()),
+            child: CircleAvatar(
+              radius: 30,
+              backgroundImage: NetworkImage(user.photoURL.toString()),
+
+              ),
+          ),
+          ),
       ],
     );
   }

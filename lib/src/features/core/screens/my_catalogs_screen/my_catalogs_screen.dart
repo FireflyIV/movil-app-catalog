@@ -29,9 +29,6 @@ class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
   Widget build(BuildContext context) {
     _load();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Catálogos'),
-      ),
       body: SafeArea(
           child: catalogsNames.isNotEmpty
               ? ListView.builder(

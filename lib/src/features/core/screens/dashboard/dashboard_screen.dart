@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:catalogo_app/src/features/core/screens/dashboard/widgets/appbar.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 
 class Dashboard extends StatelessWidget {
@@ -17,7 +18,10 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
     final isDark = MediaQuery.of(context).platformBrightness == Brightness.dark; //Dark mode
-
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: tPrimaryColor,
+        //or set color with: Color(0xFF0000FF)
+        statusBarIconBrightness: Brightness.dark));
 
     return SafeArea(
       child: Scaffold(
@@ -26,7 +30,7 @@ class Dashboard extends StatelessWidget {
             index: controller.tabIndex.value,
             children:  const [
               SavedCatalogsScreen(),
-              QRViewExample(),
+              SavedCatalogsScreen(),
               MyCatalogsScreen()
             ],
           ),
@@ -36,7 +40,11 @@ class Dashboard extends StatelessWidget {
           unselectedItemColor: Colors.white38,
           selectedItemColor: tWhiteColor,
           onTap: (index) {
-            controller.changeTabIndex(index);
+            if (index == 1){
+              Navigator.push(context,MaterialPageRoute(builder: (context) => const QRViewExample()));
+            } else {
+              controller.changeTabIndex(index);
+            }
           },
           currentIndex: controller.tabIndex.value,
           items: [
