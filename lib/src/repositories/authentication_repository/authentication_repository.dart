@@ -2,6 +2,7 @@
 import 'package:catalogo_app/src/constants/text_strings.dart';
 import 'package:catalogo_app/src/features/authentication/screens/welcome/welcome_screen.dart';
 import 'package:catalogo_app/src/features/core/screens/dashboard/dashboard_screen.dart';
+import 'package:catalogo_app/src/features/core/screens/profile/profile_screen.dart';
 import 'package:catalogo_app/src/repositories/authentication_repository/exceptions/login_email_password_failure.dart';
 import 'package:catalogo_app/src/repositories/authentication_repository/exceptions/signup_email_password_failure.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,7 +27,7 @@ class AuthenticationRepository extends GetxController {
 
   _setInitialScreen(User? user) {
     user == null ? Get.offAll(() => const WelcomeScreen()) :
-                    Get.offAll(() => const Dashboard());
+                    Get.to(() => Dashboard());
   }
 
   // Email and password
