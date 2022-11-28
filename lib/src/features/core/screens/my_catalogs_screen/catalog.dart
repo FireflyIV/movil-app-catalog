@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,7 +16,8 @@ class Catalog extends StatefulWidget {
 }
 
 class _CatalogState extends State<Catalog> {
-  final String _uid = "001";
+  final user = FirebaseAuth.instance.currentUser!;
+  String _uid = "";
   List<Item> items = [];
   final _formKey = GlobalKey<FormState>();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -243,6 +245,7 @@ class _CatalogState extends State<Catalog> {
   }
 
   _load() async {
+    _uid = user.uid.toString();
     await firestore
         .collection("catalogs/$_uid/MyCatalogs/$_catalogName/Items")
         .get()
@@ -291,6 +294,15 @@ class _CatalogState extends State<Catalog> {
       "type": "default",
       "imageUrl":
       "https://firebasestorage.googleapis.com/v0/b/catalogs-app-a65fa.appspot.com/o/llanta.png?alt=media&token=fdc7ff66-b54e-42d0-9a17-df79aa136eaf",
+    }).then((value) {
+      _update();
+    });
+  }
+
+  _update() {
+    items.clear();
+    setState(() {
+      _load();
     });
   }
 }

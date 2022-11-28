@@ -23,8 +23,6 @@ class ProfileScreen extends StatelessWidget {
     final profileController = Get.put(ProfileController());
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     final db = FirebaseFirestore.instance;
-    final formController = Get.put(SignUpController());
-    final formKey = GlobalKey<FormState>();
 
     return StreamBuilder(
         stream: db.collection('users').doc(user.uid).snapshots(),
