@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:catalogo_app/src/features/core/screens/my_catalogs_screen/catalog.dart';
@@ -10,7 +11,10 @@ class MyCatalogsScreen extends StatefulWidget {
 }
 
 class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
-  final String _uid = "001";
+
+  final user = FirebaseAuth.instance.currentUser!;
+
+  late String _uid = "001";
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final TextEditingController _catalogNameController = TextEditingController();
   List<String> catalogsNames = [];
@@ -104,6 +108,7 @@ class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
   }
 
   _load(){
+    _uid = user.uid;
     firestore.collection("catalogs/$_uid/MyCatalogs").get().then(
           (value) {
         value.docs.forEach((doc) {
