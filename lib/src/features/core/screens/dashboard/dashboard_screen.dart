@@ -5,6 +5,7 @@ import 'package:catalogo_app/src/features/core/screens/read_catalog/read_catalog
 import 'package:catalogo_app/src/features/core/screens/saved_catalogs_screen/saved_catalogs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:catalogo_app/src/features/core/screens/dashboard/widgets/appbar.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 
@@ -23,9 +24,9 @@ class Dashboard extends StatelessWidget {
         appBar: DashboardAppBar(isDark: isDark,),
         body:  Obx(() => IndexedStack(
             index: controller.tabIndex.value,
-            children: const [
+            children:  const [
               SavedCatalogsScreen(),
-              ReadCatalogScreen(),
+              QRViewExample(),
               MyCatalogsScreen()
             ],
           ),
@@ -53,6 +54,8 @@ class Dashboard extends StatelessWidget {
         icon: Icon(icon),
         label: label);
   }
+
+
 }
 
 
