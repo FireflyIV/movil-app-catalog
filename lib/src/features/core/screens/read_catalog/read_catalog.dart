@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:catalogo_app/src/constants/colors.dart';
 import 'package:catalogo_app/src/features/core/screens/profile/profile_screen.dart';
+import 'package:catalogo_app/src/features/core/screens/read_catalog/readed_catalog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -75,10 +76,16 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Catalog(name: "Avon Hugo")));
-        controller!.stopCamera();
+        String code = " ";
+        if (result != null){
+          code = result!.code!;
+          print(code);
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: code,)));
+          controller!.stopCamera();
+        }
+
         //Get.to(() => ProfileScreen());
       });
     });
