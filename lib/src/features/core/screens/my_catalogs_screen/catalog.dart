@@ -1,10 +1,13 @@
+import 'dart:io';
+
+import 'package:catalogo_app/src/constants/text_strings.dart';
 import 'package:catalogo_app/src/features/core/models/items_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:catalogo_app/src/features/core/models/dashboard/item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class Catalog extends StatefulWidget {
@@ -132,68 +135,135 @@ class _CatalogState extends State<Catalog> {
   }
 
   Future<void> _dialogBuilder(BuildContext context) {
-    return showDialog<void>(
+    return showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Nuevo Item"),
-          content: Stack(
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+      builder: (context) {
+        String photoUrl = tProfileImage;
+        File? image;
+
+        return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: const Text("Agregar artículo"),
+                content: Stack(
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(0),
-                      child: TextFormField(
-                        controller: _itemNameController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Nombre del Item.',
-                        ),
-                      ),
-                    ),
-                    const Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(0),
-                      child: TextFormField(
-                        controller: _itemPriceController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Precio del Item.',
-                        ),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(
+                              width: 200,
+                              height: 90,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: image != null ? Image.file(image!) : FlutterLogo(),
+                              )
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                height: 45,
+                                child: ElevatedButton.icon(
+                                  label: const Text('Subir imagen'),
+                                  icon: const Icon(Icons.image, size: 18,),
+                                  onPressed: () async {
+                                    ImagePicker imagePickerGallery = ImagePicker();
+
+                                    final file = await imagePickerGallery.pickImage(source: ImageSource.gallery);
+                                    if (file == null) return;
+                                    final imageTemporary = File(file.path);
+
+                                    setState(() {
+                                      image = imageTemporary;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                height: 44,
+                                width: 120,
+                                child: ElevatedButton.icon(
+                                  label: const Text('Tomar foto'),
+                                  icon: const Icon(Icons.camera, size: 18,),
+                                  onPressed: () async {
+                                    ImagePicker imagePickerGallery = ImagePicker();
+                                    final file = await imagePickerGallery.pickImage(source: ImageSource.camera);
+
+                                    setState(() {
+                                      print('${file?.path}');
+                                      image = file as File?;
+                                      photoUrl = image!.path;
+                                    });
+
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 15),
+                          TextFormField(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return tValidationMessage;
+                              }
+                            },
+                            controller: _itemNameController,
+                            decoration: const InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+                                label: Text("Nombre del artículo"),
+                                prefixIcon: Icon(Icons.article)),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return tValidationMessage;
+                              }
+                            },
+                            controller: _itemPriceController,
+                            decoration: const InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+                                label: Text("Precio"),
+                                prefixIcon: Icon(Icons.price_change)),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Aceptar'),
-              onPressed: () {
-                _add();
-                _load();
-                _itemNameController.clear();
-                _itemPriceController.clear();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+                actions: <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      textStyle: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    child: const Text('Cancelar'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      textStyle: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    child: const Text('Aceptar'),
+                    onPressed: () {
+                      _add();
+                      _load();
+                      _itemNameController.clear();
+                      _itemPriceController.clear();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            }
         );
       },
     );
