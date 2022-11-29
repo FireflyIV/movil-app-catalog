@@ -19,6 +19,7 @@ dependencies:
   liquid_swipe: ^3.0.0
   smooth_page_indicator: ^1.0.0+2
   uuid: ^3.0.7
+  qr_flutter: ^4.0.0
 
   ## -- OTP Text Field Package
   otp_text_field: ^1.1.3

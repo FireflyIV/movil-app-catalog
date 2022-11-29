@@ -9,6 +9,7 @@ import 'package:catalogo_app/src/features/core/models/dashboard/item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
+import 'package:catalogo_app/src/features/core/screens/my_catalogs_screen/qr.dart';
 
 class Catalog extends StatefulWidget {
   final String name;
@@ -39,6 +40,17 @@ class _CatalogState extends State<Catalog> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_catalogName),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QRPage(catalog: _catalogName, uuid: user.uid.toString(),))
+              )
+            },
+            icon: Icon(Icons.qr_code),
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: firestore.collection('catalogs').doc(user.uid).collection('MyCatalogs').doc(_catalogName).collection('Items').snapshots(),
@@ -88,7 +100,7 @@ class _CatalogState extends State<Catalog> {
                           child: CachedNetworkImage(
                             errorWidget: (context, url, error) => const Icon(Icons.error),
                             placeholder: (context, url) => const CircularProgressIndicator(),
-                            imageUrl: items[index].photoURL ?? "",
+                            imageUrl: items[index].photoURL,
                             height: 100,
                             width: 100,
                           ),
@@ -96,7 +108,7 @@ class _CatalogState extends State<Catalog> {
                         const SizedBox(width: 10,),
                         Expanded(
                           child: Text(
-                            items[index].name ?? "",
+                            items[index].name,
                             style: const TextStyle(
                               fontSize: 20,
                               overflow: TextOverflow.clip,
@@ -107,7 +119,7 @@ class _CatalogState extends State<Catalog> {
                         Expanded(
                           flex: 0,
                           child: Text(
-                            "\$${items[index].price ?? ""}",
+                            "\$${items[index].price}",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 30,
@@ -270,8 +282,8 @@ class _CatalogState extends State<Catalog> {
   }
 
   Future<void> _dialogBuilderEdit(BuildContext context, ItemModel aux) {
-    _itemNameEditController.text = aux.name!;
-    _itemPriceEditController.text = aux.price!;
+    _itemNameEditController.text = aux.name;
+    _itemPriceEditController.text = aux.price;
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -326,7 +338,7 @@ class _CatalogState extends State<Catalog> {
               ),
               child: const Text('Aceptar'),
               onPressed: () {
-                _edit(aux.id ?? "");
+                _edit(aux.id);
                 _itemNameController.clear();
                 _itemPriceController.clear();
                 Navigator.of(context).pop();
@@ -391,13 +403,6 @@ class _CatalogState extends State<Catalog> {
       "type": "default",
       "imageUrl":
       "https://firebasestorage.googleapis.com/v0/b/catalogs-app-a65fa.appspot.com/o/llanta.png?alt=media&token=fdc7ff66-b54e-42d0-9a17-df79aa136eaf",
-    });
-  }
-
-  _update() {
-    items.clear();
-    setState(() {
-      _load();
     });
   }
 }
