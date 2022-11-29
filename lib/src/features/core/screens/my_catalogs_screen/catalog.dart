@@ -67,7 +67,7 @@ class _CatalogState extends State<Catalog> {
             return SizedBox(
               child: Center(
                 child:
-                  Text("No hay catálogos registrados para${user.displayName}")),
+                  Text("No hay items registrados para ${user.displayName}")),
             );
           }
 
