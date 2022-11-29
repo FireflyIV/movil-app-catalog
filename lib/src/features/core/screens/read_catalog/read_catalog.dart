@@ -1,13 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:catalogo_app/src/constants/colors.dart';
-import 'package:catalogo_app/src/features/core/screens/profile/profile_screen.dart';
 import 'package:catalogo_app/src/features/core/screens/read_catalog/readed_catalog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../my_catalogs_screen/catalog.dart';
@@ -80,9 +77,16 @@ class _QRViewExampleState extends State<QRViewExample> {
         if (result != null){
           code = result!.code!;
           print(code);
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: code,)));
+          final ruta = code.split('/');
+          if (ruta[1] == user.uid){
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Catalog(name: ruta[3],)));
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: code,)));
+          }
           controller!.stopCamera();
         }
 

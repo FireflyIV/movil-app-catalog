@@ -11,9 +11,7 @@ class MyCatalogsScreen extends StatefulWidget {
 }
 
 class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
-
   final user = FirebaseAuth.instance.currentUser!;
-
   late String _uid = "001";
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final TextEditingController _catalogNameController = TextEditingController();
