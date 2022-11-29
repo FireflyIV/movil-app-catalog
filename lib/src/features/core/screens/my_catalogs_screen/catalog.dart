@@ -1,3 +1,4 @@
+import 'package:catalogo_app/src/features/core/models/items_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -36,18 +37,46 @@ class _CatalogState extends State<Catalog> {
       appBar: AppBar(
         title: Text(_catalogName),
       ),
-      body: SafeArea(
-          child: items.isNotEmpty
-              ? ListView.builder(
+      body: StreamBuilder(
+        stream: firestore.collection('catalogs').doc(user.uid).collection('MyCatalogs').doc(_catalogName).collection('Items').snapshots(),
+        builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.data == null) {
+            return const SizedBox();
+          }
+
+          if (snapshot.data!.docs.isEmpty) {
+            return SizedBox(
+              child: Center(
+                child:
+                  Text("No hay catálogos registrados para${user.displayName}")),
+            );
+          }
+
+          if (snapshot.hasData) {
+            List<ItemModel> items = [];
+
+            for (var doc in snapshot.data!.docs) {
+              final item =
+              ItemModel.fromJson(doc.data() as Map<String, dynamic>);
+              items.add(item);
+              print(doc.data());
+            }
+
+            return ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: items.length,
-              itemBuilder: (BuildContext context, int position) {
+              itemBuilder: (context, index) {
                 return Card(
                   color: Colors.white,
                   elevation: 2,
                   margin: const EdgeInsets.all(10),
                   child: InkWell(
                     splashColor: Colors.deepPurple,
-                    onTap: () => _dialogBuilderEdit(context, items[position]),
+                    onTap: () => _dialogBuilderEdit(context, items[index]),
                     child: Row(
                       textDirection: TextDirection.ltr,
                       children: <Widget>[
@@ -56,30 +85,26 @@ class _CatalogState extends State<Catalog> {
                           child: CachedNetworkImage(
                             errorWidget: (context, url, error) => const Icon(Icons.error),
                             placeholder: (context, url) => const CircularProgressIndicator(),
-                            imageUrl: items[position].imageUrl ?? "",
+                            imageUrl: items[index].photoURL ?? "",
                             height: 100,
                             width: 100,
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10,),
                         Expanded(
                           child: Text(
-                            items[position].name ?? "",
+                            items[index].name ?? "",
                             style: const TextStyle(
                               fontSize: 20,
                               overflow: TextOverflow.clip,
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10,),
                         Expanded(
                           flex: 0,
                           child: Text(
-                            "\$${items[position].price ?? ""}",
+                            "\$${items[index].price ?? ""}",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 30,
@@ -87,21 +112,21 @@ class _CatalogState extends State<Catalog> {
                             textAlign: TextAlign.right,
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10,),
                       ],
                     ),
                   ),
                 );
-              })
-              : const Center(
-            child: Text('No hay items aún.'),
-          )),
+              },
+            );
+          }
+          return const SizedBox();
+        })
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _dialogBuilder(context),
-        backgroundColor: Colors.deepPurple,
-        child: const Icon(Icons.add),
+              onPressed: () => _dialogBuilder(context),
+              backgroundColor: Colors.deepPurple,
+              child: const Icon(Icons.add),
       ),
     );
   }
@@ -174,7 +199,7 @@ class _CatalogState extends State<Catalog> {
     );
   }
 
-  Future<void> _dialogBuilderEdit(BuildContext context, Item aux) {
+  Future<void> _dialogBuilderEdit(BuildContext context, ItemModel aux) {
     _itemNameEditController.text = aux.name!;
     _itemPriceEditController.text = aux.price!;
     return showDialog<void>(
@@ -231,8 +256,7 @@ class _CatalogState extends State<Catalog> {
               ),
               child: const Text('Aceptar'),
               onPressed: () {
-                _edit(aux.uuid ?? "");
-                _load();
+                _edit(aux.id ?? "");
                 _itemNameController.clear();
                 _itemPriceController.clear();
                 Navigator.of(context).pop();
@@ -277,25 +301,26 @@ class _CatalogState extends State<Catalog> {
     final userCollection = FirebaseFirestore.instance.collection("catalogs/$_uid/MyCatalogs/$_catalogName/Items");
     final docRef = userCollection.doc(uuid.v1());
     await docRef.set({
+      "id" : docRef.id.toString(),
       "name": _itemNameController.text,
       "price": _itemPriceController.text,
       "type": "default",
       "imageUrl":
       "https://firebasestorage.googleapis.com/v0/b/catalogs-app-a65fa.appspot.com/o/llanta.png?alt=media&token=fdc7ff66-b54e-42d0-9a17-df79aa136eaf",
     });
+
   }
 
   Future _edit(String id) async {
     final userCollection = FirebaseFirestore.instance.collection("catalogs/$_uid/MyCatalogs/$_catalogName/Items");
     final docRef = userCollection.doc(id);
     await docRef.set({
+      "id": docRef.id,
       "name": _itemNameEditController.text,
       "price": _itemPriceEditController.text,
       "type": "default",
       "imageUrl":
       "https://firebasestorage.googleapis.com/v0/b/catalogs-app-a65fa.appspot.com/o/llanta.png?alt=media&token=fdc7ff66-b54e-42d0-9a17-df79aa136eaf",
-    }).then((value) {
-      _update();
     });
   }
 
