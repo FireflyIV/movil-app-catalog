@@ -1,3 +1,4 @@
+import 'package:catalogo_app/src/constants/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,50 +19,77 @@ class _SavedCatalogsScreenState extends State<SavedCatalogsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _load();
     return Scaffold(
-      body: SafeArea(
-          child: catalogsNames.isNotEmpty
-              ? ListView.builder(
-              itemCount: catalogsNames.length,
-              itemBuilder: (BuildContext context, int position) {
-                return Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: Text(
-                          _getName(catalogsNames[position]),
-                          style: const TextStyle(
-                            fontSize: 25,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: catalogsNames[position])),
-                          );
-                        },
-                        trailing: GestureDetector(
-                          onTap: (){
-                            _delete(catalogsNames[position]);
-                            setState(() {
-                            });
-                          },
-                          child: const Icon(
-                              Icons.bookmark,
-                            size: 40,
-                          ),
-                        ),
-                      ),
-                    ],
+      body: StreamBuilder(
+          stream: firestore.collection("catalogs/${user.uid}/SavedCatalogs").snapshots(),
+          builder: ((context, snapshot) {
+
+            // Verifications
+            if (!snapshot.hasData) {
+              print("NO HAY DATOS DISPONIBLES");
+              return const SizedBox(
+                child: Center(
+                    child:
+                    Text("Vacio")),
+              );
+            }
+
+            if (snapshot.data!.docs.isEmpty) {
+              return Container(
+                decoration: const BoxDecoration(
+                    color: tLightPrimaryColor
+                ),
+                child: const Center(
+                  child:
+                  Text(
+                    "Aún no has guardado un catálogo\n ¡Scanea un QR para agregarlo!",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                );
-              })
-              : const Center(
-            child: Text('No hay catálogos aún.'),
-          )),
+                ),
+              );
+            }
+            // Information
+            _load();
+            return Container(
+                decoration: const BoxDecoration(
+                    color: tLightPrimaryColor
+                ),
+                child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: tCardBgColor,
+                        elevation: 17,
+                        margin: const EdgeInsets.only(left: 15, right: 15, top: 20),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)
+                        ),
+                        child: InkWell(
+                          splashColor: tSecondaryColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: snapshot.data!.docs[index]["ruta"], isSaved: false)),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(
+                              _getName(catalogsNames[index]),
+                              style: Theme.of(context).textTheme.headline5,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                )
+            );
+          })
+      ),
     );
   }
 

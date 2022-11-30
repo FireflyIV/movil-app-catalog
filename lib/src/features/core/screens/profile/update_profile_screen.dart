@@ -40,8 +40,10 @@ class UpdateProfileScreen extends StatelessWidget {
           //return new Text(userDocument["name"]);
           return Scaffold(
             appBar: AppBar(
+              titleTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+              backgroundColor: tPrimaryColor,
               leading: IconButton(onPressed: () => Get.back(), icon: const Icon(LineAwesomeIcons.angle_left)),
-              title: Center(child: Text(tEditProfile, style: Theme.of(context).textTheme.headline4)),
+              title: Center(child: Text(tEditProfile)),
 
               actions: [
                 IconButton(onPressed: () {}, icon: Icon(isDark? LineAwesomeIcons.sun : LineAwesomeIcons.moon))

@@ -35,7 +35,8 @@ class ProfileScreen extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               leading: IconButton(onPressed: () {}, icon: const Icon(LineAwesomeIcons.angle_left)),
-              title: Text(tProfile, style: Theme.of(context).textTheme.headline4),
+              title: const Text(tProfile),
+              titleTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
               backgroundColor: tPrimaryColor,
               actions: [
                 IconButton(onPressed: () {}, icon: Icon(isDark? LineAwesomeIcons.sun : LineAwesomeIcons.moon))

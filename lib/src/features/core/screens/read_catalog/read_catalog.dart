@@ -85,7 +85,7 @@ class _QRViewExampleState extends State<QRViewExample> {
           } else {
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: code,)));
+                MaterialPageRoute(builder: (context) => ReadCatalog(nameCatalog: code, isSaved: true)));
           }
           controller!.stopCamera();
         }
