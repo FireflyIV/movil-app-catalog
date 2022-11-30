@@ -26,7 +26,8 @@ class Dashboard extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: DashboardAppBar(isDark: isDark,),
-        body:  Obx(() => IndexedStack(
+        body:
+        Obx(() => IndexedStack(
             index: controller.tabIndex.value,
             children:  const [
               SavedCatalogsScreen(),

@@ -1,3 +1,4 @@
+import 'package:catalogo_app/src/constants/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,10 +13,12 @@ class MyCatalogsScreen extends StatefulWidget {
 
 class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
   final user = FirebaseAuth.instance.currentUser!;
-  late String _uid = "001";
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final TextEditingController _catalogNameController = TextEditingController();
   List<String> catalogsNames = [];
+
+  // DB
+
 
   @override
   void dispose() {
@@ -25,40 +28,84 @@ class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _load();
-    return Scaffold(
-      body: SafeArea(
-          child: catalogsNames.isNotEmpty
-              ? ListView.builder(
-              itemCount: catalogsNames.length,
-              itemBuilder: (BuildContext context, int position) {
-                return Card(
-                  color: Colors.white,
-                  elevation: 2,
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: Text(catalogsNames[position]),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Catalog(name: catalogsNames[position])),
-                          );
-                        },
-                      )
-                    ],
+      return Scaffold(
+        body: StreamBuilder(
+            stream: firestore.collection("catalogs/${user.uid}/MyCatalogs").snapshots(),
+            builder: ((context, snapshot) {
+
+              // Verifications
+              if (!snapshot.hasData) {
+                print("NO HAY DATOS DISPONIBLES");
+                return const SizedBox(
+                  child: Center(
+                      child:
+                      Text("Vacio")),
+                );
+              }
+
+              if (snapshot.data!.docs.isEmpty) {
+                return Container(
+                  decoration: const BoxDecoration(
+                      color: tLightPrimaryColor
+                  ),
+                  child: const Center(
+                    child:
+                        Text(
+                          "Aún no has creado un catálogo\n ¡Comienza creando uno!",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                   ),
                 );
-              })
-              : const Center(
-            child: Text('No hay catálogos aún.'),
-          )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _dialogBuilder(context),
-        backgroundColor: Colors.deepPurple,
-        child: const Icon(Icons.add),
-      ),
-    );
+              }
+              // Information
+
+              return Container(
+                decoration: const BoxDecoration(
+                    color: tLightPrimaryColor
+                ),
+                child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: tCardBgColor,
+                        elevation: 17,
+                        margin: const EdgeInsets.only(left: 15, right: 15, top: 20),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)
+                        ),
+                        child: InkWell(
+                          splashColor: tSecondaryColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Catalog(name: snapshot.data!.docs[index].id)),
+                            );
+                          },
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Text(
+                                snapshot.data!.docs[index].id,
+                                style: Theme.of(context).textTheme.headline5,
+                              ),
+                            ),
+                        ),
+                      );
+                  }
+              )
+              );
+            })
+        ),
+
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _dialogBuilder(context),
+          backgroundColor: tAccentColor,
+          child: const Icon(Icons.add),
+        ),
+      );
   }
 
   Future<void> _dialogBuilder(BuildContext context) {
@@ -70,9 +117,9 @@ class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
           content: TextFormField(
             controller: _catalogNameController,
             decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Platillos de mi restaurante',
-            ),
+                contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+                label: Text("Nombre del catálogo"),
+                prefixIcon: Icon(Icons.book)),
           ),
           actions: <Widget>[
             TextButton(
@@ -91,7 +138,6 @@ class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
               child: const Text('Aceptar'),
               onPressed: () {
                 _add();
-                _load();
                 _catalogNameController.clear();
                 Navigator.of(context).pop();
               },
@@ -102,31 +148,9 @@ class _MyCatalogsScreenState extends State<MyCatalogsScreen> {
     );
   }
 
-  _load(){
-    _uid = user.uid;
-    firestore.collection("catalogs/$_uid/MyCatalogs").get().then(
-          (value) {
-        value.docs.forEach((doc) {
-          if (catalogsNames.isNotEmpty){
-            if(!catalogsNames.contains(doc.id)){
-              setState(() {
-                catalogsNames.add(doc.id);
-                catalogsNames.sort();
-              });
-            }
-          } else {
-            setState(() {
-              catalogsNames.add(doc.id);
-              catalogsNames.sort();
-            });
-          }
-        });
-      },
-    );
-  }
 
   Future _add() async{
-    final userCollection = FirebaseFirestore.instance.collection("catalogs/$_uid/MyCatalogs");
+    final userCollection = FirebaseFirestore.instance.collection("catalogs/${user.uid}/MyCatalogs");
     final docRef = userCollection.doc(_catalogNameController.text);
     await docRef.set({});
   }
