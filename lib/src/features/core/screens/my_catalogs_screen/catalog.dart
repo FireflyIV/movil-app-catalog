@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:catalogo_app/src/common_widgets/custom_snack_bar/custom_snack_bar.dart';
 import 'package:catalogo_app/src/constants/colors.dart';
 import 'package:catalogo_app/src/constants/text_strings.dart';
 import 'package:catalogo_app/src/features/core/models/items_model.dart';
@@ -43,8 +44,8 @@ class _CatalogState extends State<Catalog> {
 
   /* category  */
   var setDefaultCategory = true;
-  var categoryDefault;
-  var categoryUid;
+  var categoryDefault = "";
+  var categoryUid = "";
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,7 @@ class _CatalogState extends State<Catalog> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: tPrimaryColor,
-        title: Text(_catalogName),
+        title: Text(_catalogName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
         actions: <Widget>[
           IconButton(
             onPressed: () => {
@@ -71,15 +72,33 @@ class _CatalogState extends State<Catalog> {
             return StreamBuilder(
               stream: firestore.collection('catalogs').doc(user.uid).collection('MyCatalogs').doc(_catalogName).collection('Categories').snapshots(),
               builder: ((context, snapshotCategory) {
+
                 if (!snapshotCategory.hasData) {
+                  print("NO HAY DATOS DISPONIBLES");
                   return const SizedBox(
                     child: Center(
                         child:
-                        Text("Tu catálogo se encuentra vació, comienza creando una categoría")),
+                        Text("Vacio")),
+                  );
+                }
+
+                if (snapshotCategory.data!.docs.isEmpty) {
+                  return const SizedBox(
+                    child: Center(
+                        child:
+                        Text("Tu catálogo se encuentra vacio\n Comienza creando una categoría",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          textAlign: TextAlign.center,
+                        )
+                    ),
                   );
                 }
 
                 if (setDefaultCategory) {
+                  print("MyCatalog::SetDefaultCategory");
                   categoryDefault = snapshotCategory.data!.docs[0].get('name');
                   categoryUid = snapshotCategory.data!.docs[0].get('id');
                   setDefaultCategory = false;
@@ -87,157 +106,143 @@ class _CatalogState extends State<Catalog> {
                 }
 
                 return StreamBuilder(
-                    stream: firestore.collection('catalogs').doc(user.uid).collection('MyCatalogs').doc(_catalogName).collection('Items').where("category", isEqualTo: "$categoryUid").snapshots(),
+                    stream: firestore.collection('catalogs').doc(user.uid).collection('MyCatalogs').doc(_catalogName).collection('Items').where("category", isEqualTo: categoryUid).snapshots(),
                     builder: ((context, AsyncSnapshot<QuerySnapshot> snapshot) {
+
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
                       }
 
-                      if (!snapshotCategory.hasData) {
+                      // Categories collection is not empty
+                      print("Si hay categorías ${snapshotCategory.data!.docs.length}");
+
+                      if (snapshot.data == null) {
+                        return const SizedBox();
+                      }
+
+                      if (snapshot.data!.docs.isEmpty) {
+                        print('ARTICULOS: ${snapshot.data!.docs.length}');
                         return const SizedBox(
                           child: Center(
                               child:
-                              Text("Tu catálogo se encuentra vació, comienza creando una categoría")),
+                              Text("Tu catálogo se encuentra vacio\n ¡Agrega un artículo!",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                          ),
                         );
-                      } else {
-                        print("Si hay datos ${snapshotCategory.data!.docs.length}");
+                      }
+                      // There are some data in item document
+                      List<ItemModel> items = [];
 
-                        if (setDefaultCategory) {
-                          categoryDefault = snapshotCategory.data!.docs[0].get('name');
-                          categoryUid = snapshotCategory.data!.docs[0].get('id');
-                          debugPrint('Set default category: $categoryDefault');
-                          setDefaultCategory = false;
+                      for (var doc in snapshot.data!.docs) {
+                        final item =
+                        ItemModel.fromJson(doc.data() as Map<String, dynamic>);
+                        items.add(item);
+                        print(doc.data());
+                      }
 
-                        }
+                      // Create list here
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: SizedBox(
+                                height:50,
+                                child: ListView.builder(
+                                  itemCount: snapshotCategory.data!.docs.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, position) {
+                                    return Card(
+                                      color: tSecondaryColor,
+                                      elevation: 2,
+                                      margin: const EdgeInsets.all(5),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15)
+                                      ),
+                                      child: InkWell(
+                                        splashColor: tSecondaryColor,
+                                        onTap: () {
+                                          setState(() {
+                                            print("CAMBIANDO DE CATEGORIA A ${snapshotCategory.data!.docs[position]['id']}");
+                                            categoryUid = snapshotCategory.data!.docs[position]['id'];
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Center(
+                                            child: Text('${snapshotCategory.data!.docs[position]['name']}',
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold
 
-                        if (snapshot.data == null) {
-                          return const SizedBox();
-                        }
-
-                        if (snapshot.data!.docs.isEmpty) {
-                          return const SizedBox(
-                            child: Center(
-                                child:
-                                Text("Tu catálogo se encuentra vació, comienza agregando items")),
-                          );
-                        }
-
-                        if (!snapshot.hasData) {
-                          return const SizedBox(
-                            child: Center(
-                                child:
-                                Text("Tu catálogo se encuentra vació, comienza agregando un item")),
-                          );
-                        }
-
-                        List<ItemModel> items = [];
-
-                        for (var doc in snapshot.data!.docs) {
-                          final item =
-                          ItemModel.fromJson(doc.data() as Map<String, dynamic>);
-                          items.add(item);
-                          print(doc.data());
-                        }
-
-                        // Create list here
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: SizedBox(
-                                  height:50,
-                                  child: ListView.builder(
-                                    itemCount: snapshotCategory.data!.docs.length,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, position) {
-                                      return Card(
-                                        color: tSecondaryColor,
-                                        elevation: 2,
-                                        margin: const EdgeInsets.all(5),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(15)
-                                        ),
-                                        child: InkWell(
-                                          splashColor: tSecondaryColor,
-                                          onTap: () {
-                                            setState(() {
-                                              print("CAMBIANDO DE CATEGORIA A ${snapshotCategory.data!.docs[position]['id']}");
-                                              categoryUid = snapshotCategory.data!.docs[position]['id'];
-                                            });
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Center(
-                                              child: Text('${snapshotCategory.data!.docs[position]['name']}',
-                                                style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold
-
-                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                  )
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: items.length,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                    color: tLightPrimaryColor,
-                                    elevation: 1,
-                                    margin: const EdgeInsets.only(right: 10, left: 10, top: 15),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15.0)),
-                                    child: InkWell(
-                                      splashColor: tAccentColor,
-                                      onTap: () => _dialogBuilderEdit(context, items[index]),
-                                      child: Row(
-                                        textDirection: TextDirection.ltr,
-                                        children: <Widget>[
-                                          Expanded(
-                                            flex: 0,
-                                            child: CachedNetworkImage(
-                                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                                              placeholder: (context, url) => const CircularProgressIndicator(),
-                                              imageUrl: items[index].photoURL,
-                                              height: 110,
-                                              width: 120,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 20),
-
-                                          Expanded(
-                                            child: Text(
-                                              items[index].name,
-                                              style: Theme.of(context).textTheme.headline5,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10,),
-                                          Padding(
-                                            padding: const EdgeInsets.only(right: 5),
-                                            child: Text(
-                                              "\$${items[index].price}",
-                                              style: Theme.of(context).textTheme.headline5,
-                                              textAlign: TextAlign.right,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10,),
-                                        ],
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
+                                    );
+                                  },
+                                )
                             ),
-                          ],
-                        );
-                      }
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  color: tLightPrimaryColor,
+                                  elevation: 1,
+                                  margin: const EdgeInsets.only(right: 10, left: 10, top: 15),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0)),
+                                  child: InkWell(
+                                    splashColor: tAccentColor,
+                                    onTap: () => _dialogBuilderEdit(context, items[index]),
+                                    child: Row(
+                                      textDirection: TextDirection.ltr,
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 0,
+                                          child: CachedNetworkImage(
+                                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                                            placeholder: (context, url) => const CircularProgressIndicator(),
+                                            imageUrl: items[index].photoURL,
+                                            height: 110,
+                                            width: 120,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 20),
+
+                                        Expanded(
+                                          child: Text(
+                                            items[index].name,
+                                            style: Theme.of(context).textTheme.headline5,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10,),
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 5),
+                                          child: Text(
+                                            "\$${items[index].price}",
+                                            style: Theme.of(context).textTheme.headline5,
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10,),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
                       return const SizedBox();
                     })
                 );
@@ -256,7 +261,20 @@ class _CatalogState extends State<Catalog> {
             label: 'Agregar artículo',
             backgroundColor: tAccentColor,
             onTap: () {
-              _dialogBuilder(context);
+              if (categoryDefault != ""){
+                _dialogBuilder(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: CustomSnackBar(
+                      errorMessage: "Crea una categoría primero",
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                  ),
+                );
+              }
             }
           ),
           SpeedDialChild(
@@ -276,6 +294,8 @@ class _CatalogState extends State<Catalog> {
       ),
     );
   }
+
+
 
   Future<void> _dialogBuilder(BuildContext context) {
     return showDialog(
@@ -399,7 +419,49 @@ class _CatalogState extends State<Catalog> {
                                   label: Text("Precio"),
                                   prefixIcon: Icon(Icons.price_change)),
                             ),
-                            const DropdownButtonApp(),
+                            const SizedBox(height: 15),
+                            StreamBuilder<QuerySnapshot>(
+                                stream: firestore.collection('catalogs').doc(user.uid).collection('MyCatalogs').doc(_catalogName).collection('Categories').orderBy('name').snapshots(),
+                                builder: ((BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (!snapshot.hasData) {
+                                    print("No hay datos");
+                                    return Container();
+                                  }
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white, borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    child: DropdownButtonFormField(
+                                      isExpanded: false,
+                                      value: categoryUid,
+                                      items: snapshot.data!.docs.map((value) {
+                                        return DropdownMenuItem(
+                                          value: value.get('id'),
+                                          child: Text('${value.get('name')}'),
+                                        );
+                                      }).toList(),
+                                      onChanged: (value) {
+                                        debugPrint('Selected on change: $value');
+                                        setState(() {
+                                          debugPrint('category selected: $value');
+                                          categoryUid = value.toString();
+                                          setDefaultCategory = false;
+                                        });
+                                      },
+                                      dropdownColor: tLightPrimaryColor,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      iconSize: 20,
+
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+                                        labelText: "Categoría",
+                                        prefixIcon: Icon(Icons.category_outlined),
+                                      ),
+                                    ),
+                                  );
+                                })
+                            ),
                           ],
                         ),
                       ),
@@ -593,6 +655,7 @@ class _CatalogState extends State<Catalog> {
       final docRef = userCollection.doc(uuid.v1());
       Reference referenceImageToUpload = referenceDirImagesProfile.child(user.uid).child(_catalogName).child(docRef.id);
       await referenceImageToUpload.putFile(File(image!.path));
+
       String url = await referenceImageToUpload.getDownloadURL();
       print("NOMBRE: $name");
       print("PRECIO: $price");
@@ -602,6 +665,7 @@ class _CatalogState extends State<Catalog> {
         "price": price,
         "type": "default",
         "imageUrl": url,
+        "category" : categoryUid,
       });
 
       image = null;
@@ -609,7 +673,6 @@ class _CatalogState extends State<Catalog> {
     } catch (e) {
 
     }
-
   }
 
   Future _edit(String id) async {
@@ -648,6 +711,7 @@ class _CatalogState extends State<Catalog> {
       final docRef = categoryCollection.doc();
       print('$categoryName');
       await docRef.set({
+        "id" : docRef.id,
         "name" : categoryName
       });
     } catch (e) {
