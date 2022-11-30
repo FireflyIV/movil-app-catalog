@@ -1060,9 +1060,8 @@ class _CatalogState extends State<Catalog> {
                     ),
                     child: const Text('Aceptar'),
                     onPressed: () {
-                      print("Editando categoria");
-                      _editCategory();
-                      _categoryNameEditController.clear();
+                      print("Eliminando categoria");
+                      _deleteCategory(categoryUid);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -1104,7 +1103,23 @@ class _CatalogState extends State<Catalog> {
     }
   }
 
-  void _deleteArticle(String id) {
+  Future _deleteArticle(String id) async {
+    try {
+      final categoryCollection =  FirebaseFirestore.instance.collection("catalogs/${user.uid}/MyCatalogs/$_catalogName/Items");
+      final docRef = categoryCollection.doc(id);
+      await docRef.delete();
+    } catch (e){
+      print("Algo salió mal");
+    }
+  }
 
+  Future _deleteCategory(String categoryUid) async {
+    try {
+      final categoryCollection =  FirebaseFirestore.instance.collection("catalogs/${user.uid}/MyCatalogs/$_catalogName/Categories");
+      final docRef = categoryCollection.doc(categoryUid);
+      await docRef.delete();
+    } catch (e){
+      print("Algo salió mal");
+    }
   }
 }
