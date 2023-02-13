@@ -54,7 +54,12 @@ class SignUpFormWidget extends StatelessWidget {
               },
               controller: formController.password,
               decoration: const InputDecoration(
-                  label: Text(tPassword), prefixIcon: Icon(Icons.fingerprint)),
+                prefixIcon: Icon(Icons.fingerprint),
+                labelText: tPassword,
+                hintText: tPassword,
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
             ),
             const SizedBox(height: tFormHeight - 10),
             SizedBox(

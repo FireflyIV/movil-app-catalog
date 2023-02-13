@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:catalogo_app/src/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -23,11 +24,16 @@ class _QRPageState extends State<QRPage> {
     String ruta = "catalogs/$id/MyCatalogs/$catalog/Items";
     return Scaffold(
       appBar: AppBar(
+
         title: const Text('Compartir QR'),
+        backgroundColor: tPrimaryColor,
       ),
       body: Stack(
         children: <Widget>[
           Container(
+              decoration: const BoxDecoration(
+                  color: tLightPrimaryColor
+              ),
             alignment: Alignment.center,
             padding: const EdgeInsets.all(10),
             child: RepaintBoundary(
@@ -52,7 +58,7 @@ class _QRPageState extends State<QRPage> {
                   _capturePng();
                 },
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple),
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
                 ),
                 child: const Text(
                   'Guardar',
