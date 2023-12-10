@@ -1,6 +1,6 @@
 # iCatalog
 
-A Flutter project.
+A Flutter project to solve the problem of sharing a catalog for a small business with the customers in an easy way.
 
 # Screenshots
 
